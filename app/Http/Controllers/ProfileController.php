@@ -54,12 +54,11 @@ class ProfileController extends Controller
     public function show(Profile $profile)
     {
         session(['active_profile' => $profile->id]);
-        $categories = Category::all();
+        $categories = Category::where('profile_id', $profile->id)->orWhere('profile_id', null)->get();
         $transactions = Transaction::where('profile_id', $profile->id)->get();
         $saving_goals = SavingGoal::where('profile_id', $profile->id)->get();
         $balance = Profile::where('id', $profile->id)->value('balance');
         $expenses = Transaction::where('profile_id', $profile->id)->where('type', 'expense')->sum('amount');
-        // $savings = SavingGoal::where('profile_id', $profile->id)->sum('amount');
         return view('profiles.index', compact('profile', 'categories', 'transactions', 'saving_goals', 'balance', 'expenses'));
     }
 
@@ -77,6 +76,18 @@ class ProfileController extends Controller
     public function update(Request $request, Profile $profile)
     {
         //
+    }
+   
+    public function updateSavings(Request $request, Profile $profile)
+    {
+        $this->validate($request,[
+            'savings' => 'required|numeric|gte:' . (-$profile->savings) .'|lte:' . $profile->balance,
+        ]);
+
+        $profile->savings += $request->savings;
+        $profile->balance -= $request->savings;
+        $profile->save();
+        return redirect()->back();
     }
 
     /**
