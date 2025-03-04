@@ -28,10 +28,11 @@ class SavingGoalController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        // dd($request->all());
+        $this->validate($request, [
             'name' => 'required|string|max:50',
-            'amount' => 'required|numeric|lte:target_amount|gt:0',
-            'target_date' => 'required|date|after:today',   
+            'target_amount' => 'required|numeric|gt:0',
+            'target_date' => 'required|date|after:today',
         ]);
 
         SavingGoal::create([
@@ -39,8 +40,10 @@ class SavingGoalController extends Controller
             'target_amount' => $request->target_amount,
             'target_date' => $request->target_date,
             'profile_id' => session('active_profile'),
+            'category_id' => $request->category_id,
         ]);
-        return redirect()->back();
+
+        return redirect()->back()->with('success', 'Saving goal created successfully!');
     }
 
     /**
@@ -66,18 +69,23 @@ class SavingGoalController extends Controller
     {
         $rest = $goal->target_amount - $goal->saved_amount;
         // dd($goal->target_amount, $request->saved_amount);
-        $this->validate($request,[
-            'saved_amount' => "required|numeric|gt:0",
+        $this->validate($request, [
+            'saved_amount' => "required|numeric|gt:0|lte:{$goal->profile->savings}",
         ]);
 
-        if($request->saved_amount > $rest) {
-             $goal->saved_amount += $rest;
-             $goal->save();
-             return redirect()->back();
+        if ($request->saved_amount > $rest) {
+            $goal->saved_amount += $rest;
+            $goal->profile->savings -= $rest;
+            $goal->profile->save();
+            $goal->save();
+            return redirect()->back();
         }
 
         $goal->saved_amount += $request->saved_amount;
+        $goal->profile->savings -= $request->saved_amount;
+        $goal->profile->save();
         $goal->save();
+        // dd($goal->profile->balance);
 
         return redirect()->back();
     }
