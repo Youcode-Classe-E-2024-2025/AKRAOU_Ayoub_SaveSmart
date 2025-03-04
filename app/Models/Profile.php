@@ -24,4 +24,9 @@ class Profile extends Model
     {
       return $this->hasMany(Transaction::class);
     }
+
+    public function savingGoal()
+    {
+      return $this->hasMany(SavingGoal::class);
+    }
 }

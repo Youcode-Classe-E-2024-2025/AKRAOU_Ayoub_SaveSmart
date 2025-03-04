@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SavingGoalController;
 use App\Http\Controllers\TransactionController;
@@ -33,6 +34,7 @@ Route::get('/profile/{profile}', [ProfileController::class, 'show'])->name('prof
 
 Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])->name('profiles.edit')->middleware('auth');
 Route::patch('/profile/{id}/edit', [ProfileController::class, 'update'])->name('profiles.update')->middleware('auth');
+Route::patch('/profile/{profile}/savings', [ProfileController::class, 'updateSavings'])->name('profiles.updateSavings')->middleware('auth');
 Route::delete('/profile/{id}/edit', [ProfileController::class, 'destroy'])->name('profiles.destroy')->middleware('auth');
 
 Route::put('/transaction/store', [TransactionController::class, 'store'])->name('transactions.store')->middleware('auth');
@@ -41,3 +43,7 @@ Route::delete('/transaction/{transaction}/edit', [TransactionController::class, 
 
 Route::put('/goal/store', [SavingGoalController::class, 'store'])->name('goals.store')->middleware('auth');
 Route::patch('/goal/{goal}/edit', [SavingGoalController::class, 'update'])->name('goals.update')->middleware('auth');
+Route::delete('/goal/{goal}/edit', [SavingGoalController::class, 'destroy'])->name('goals.destroy')->middleware('auth');
+
+Route::put('/category/store', [CategoryController::class, 'store'])->name('categories.store')->middleware('auth');
+Route::delete('/category/{category}/edit', [CategoryController::class, 'destroy'])->name('categories.destroy')->middleware('auth');

@@ -10,22 +10,35 @@
     <button onclick="openAddTransactionModal()" class="bg-white mb-4 text-green-600 px-4 py-2 rounded-lg hover:bg-green-50 transition duration-300">
         + Nouvelle Transaction
     </button>
+    <button onclick="openAddCategoryModal()" class="bg-white mb-4 text-green-600 px-4 py-2 rounded-lg hover:bg-green-50 transition duration-300">
+        + Nouvelle Catégorie
+    </button>
     <!-- Cartes de Statistiques -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex flex-wrap gap-6 mb-8 items-start">
+        <div class="bg-white rounded-lg shadow p-6 flex-1">
             <h3 class="text-gray-500 text-sm">Solde Total</h3>
-            <p class="text-2xl font-bold text-gray-800">{{ $balance }}</p>
-            <div class="mt-2 text-green-500 text-sm">+15% ce mois</div>
+            <p class="text-2xl font-bold text-gray-800">{{ $balance }}$</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-6 flex-1">
             <h3 class="text-gray-500 text-sm">Dépenses du Mois</h3>
-            <p class="text-2xl font-bold text-gray-800">{{ $expenses }}</p>
-            <div class="mt-2 text-red-500 text-sm">-5% vs mois dernier</div>
+            <p class="text-2xl font-bold text-gray-800">{{ $expenses }}$</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-6 flex-1">
             <h3 class="text-gray-500 text-sm">Économies</h3>
-            <p class="text-2xl font-bold text-gray-800"></p>
-            <div class="mt-2 text-green-500 text-sm">+20% vs objectif</div>
+            <p class="text-2xl font-bold text-gray-800">{{ $profile->savings }}$</p>
+            <form action="{{ route('profiles.updateSavings', $profile) }}" method="POST" class="flex items-center gap-4">
+                @method('PATCH')
+                @csrf
+                <div>
+                    <input type="number" name="savings" value="{{ old('savings', 0.00) }}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                    @error('savings')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </form>
         </div>
     </div>
 
@@ -228,6 +241,41 @@
     </div>
 </div>
 
+<!-- Modal category -->
+<div id="categoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full relative">
+        <button type="button" onclick="closeModal('categoryModal')" class="text-gray-500 hover:text-gray-700 absolute top-4 right-4"><i class="fa-solid fa-xmark"></i></button>
+        <h2 class="text-xl font-bold mb-4">Nouvelle Catégorie</h2>
+        <form action="{{ route('categories.store') }}" method="POST" class="flex gap-4 items-stretch">
+            @method('PUT')
+            @csrf
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Nom</label>
+                <input name="name" type="text" class="w-full border rounded-lg p-2" placeholder="Nom de la catégorie">
+            </div>
+            <div class="mb-4 h-full">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Couleur</label>
+                <input name="color" type="color" class="w-full border rounded-lg p-2" placeholder="HEX/RGB">
+            </div>
+            <button type="submit" class="self-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Créer</button>
+        </form>
+        <ul class="bg-white rounded-xl shadow-lg divide-y divide-gray-100 overflow-hidden border border-gray-100">
+            @foreach($categories as $category)
+            <li class="flex items-center p-4 transition-colors hover:bg-gray-50">
+                <span class="h-3 w-3 rounded-full mr-3" style="background-color: {{ $category->color }}"></span>
+                <span class="text-gray-800 font-medium">{{ $category->name }}</span>
+                <form class="ml-auto" action="{{ route('categories.destroy', $category->id) }}" method="POST">
+                    @method('DELETE')
+                    @csrf
+                    <button type="submit" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-xmark"></i></button>
+                </form>
+            </li>
+            @endforeach
+        </ul>
+
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -276,6 +324,10 @@
 
     function openAddGoalModal() {
         document.getElementById('goalModal').classList.remove('hidden');
+    }
+
+    function openAddCategoryModal() {
+        document.getElementById('categoryModal').classList.remove('hidden');
     }
 
     function closeModal(modalId) {

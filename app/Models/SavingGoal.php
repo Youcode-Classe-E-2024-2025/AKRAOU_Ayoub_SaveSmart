@@ -15,5 +15,16 @@ class SavingGoal extends Model
         'saved_amount',
         'target_date',
         'profile_id',
+        'category_id',
     ];
+
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
