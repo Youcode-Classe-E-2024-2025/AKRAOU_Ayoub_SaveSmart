@@ -28,7 +28,18 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'max:50'],
+            'color' => ['required', 'string'],
+        ]);
+
+        Category::create([
+            'name' => $request->name,
+            'color' => $request->color,
+            'profile_id' => session('active_profile'),
+        ]);
+
+        return redirect()->back()->with('success', 'Category created successfully!');
     }
 
     /**
@@ -60,6 +71,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        return redirect()->back()->with('success', 'Category deleted successfully!');
     }
 }
