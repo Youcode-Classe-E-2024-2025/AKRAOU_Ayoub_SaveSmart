@@ -56,7 +56,7 @@ class ProfileController extends Controller
         session(['active_profile' => $profile->id]);
         $categories = Category::where('profile_id', $profile->id)->orWhere('profile_id', null)->get();
         $transactions = Transaction::where('profile_id', $profile->id)->get();
-        $saving_goals = SavingGoal::where('profile_id', $profile->id)->get();
+        $saving_goals = SavingGoal::where('profile_id', $profile->id)->orderBy('created_at', 'desc')->get();
         $balance = Profile::where('id', $profile->id)->value('balance');
         $expenses = Transaction::where('profile_id', $profile->id)->where('type', 'expense')->sum('amount');
         return view('profiles.index', compact('profile', 'categories', 'transactions', 'saving_goals', 'balance', 'expenses'));
