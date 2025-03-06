@@ -16,6 +16,7 @@ class SavingGoal extends Model
         'target_date',
         'profile_id',
         'category_id',
+        'status'
     ];
 
     public function profile()
