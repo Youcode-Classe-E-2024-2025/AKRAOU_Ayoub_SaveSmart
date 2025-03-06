@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('saved_amount', 10, 2)->default(0);
             $table->foreignId('profile_id')->constrained('profiles')->onDelete('cascade');
             $table->foreignId('category_id') ->constrained('categories')->onDelete('cascade');
+            $table->enum('status', ['pending', 'fulfilled'])->default('pending');
             $table->timestamps();
         });
     }
