@@ -38,7 +38,7 @@ class TransactionController extends Controller
             'type' => 'required|string|in:income,expense',
             'amount' => 'required|numeric|'.$condition,
             'description' => 'required|string',
-            'category_id' => 'required|numeric',
+            'category_id' => 'numeric|nullable',
         ]);
 
         Transaction::create([
@@ -55,7 +55,7 @@ class TransactionController extends Controller
             Profile::where('id', session('active_profile'))->decrement('balance', $request->amount);
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Transaction created successfully!');
     }
 
     /**
