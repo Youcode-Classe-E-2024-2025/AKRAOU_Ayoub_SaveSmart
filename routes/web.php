@@ -43,6 +43,7 @@ Route::delete('/transaction/{transaction}/edit', [TransactionController::class, 
 
 Route::put('/goal/store', [SavingGoalController::class, 'store'])->name('goals.store')->middleware('auth');
 Route::patch('/goal/{goal}/edit', [SavingGoalController::class, 'update'])->name('goals.update')->middleware('auth');
+Route::patch('/goal/{goal}/convert', [SavingGoalController::class, 'convertToExpense'])->name('goals.convert')->middleware('auth');
 Route::delete('/goal/{goal}/edit', [SavingGoalController::class, 'destroy'])->name('goals.destroy')->middleware('auth');
 
 Route::put('/category/store', [CategoryController::class, 'store'])->name('categories.store')->middleware('auth');
