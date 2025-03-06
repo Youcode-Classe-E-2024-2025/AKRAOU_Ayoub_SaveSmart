@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SavingGoal;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class SavingGoalController extends Controller
@@ -34,6 +35,7 @@ class SavingGoalController extends Controller
             'target_amount' => 'required|numeric|gt:0',
             'target_date' => 'required|date|after:today',
         ]);
+
 
         SavingGoal::create([
             'name' => $request->name,
@@ -67,13 +69,14 @@ class SavingGoalController extends Controller
      */
     public function update(Request $request, SavingGoal $goal)
     {
+        
         $rest = $goal->target_amount - $goal->saved_amount;
         // dd($goal->target_amount, $request->saved_amount);
         $this->validate($request, [
-            'saved_amount' => "required|numeric|gt:0|lte:{$goal->profile->savings}",
+            'saved_amount.*' => "required|numeric|gt:0|lte:{$goal->profile->savings}",
         ]);
 
-        if ($request->saved_amount > $rest) {
+        if ($request->saved_amount[$goal->id] > $rest) {
             $goal->saved_amount += $rest;
             $goal->profile->savings -= $rest;
             $goal->profile->save();
@@ -81,13 +84,32 @@ class SavingGoalController extends Controller
             return redirect()->back();
         }
 
-        $goal->saved_amount += $request->saved_amount;
-        $goal->profile->savings -= $request->saved_amount;
+        $goal->saved_amount += $request->saved_amount[$goal->id];
+        $goal->profile->savings -= $request->saved_amount[$goal->id];
         $goal->profile->save();
         $goal->save();
         // dd($goal->profile->balance);
 
         return redirect()->back();
+    }
+
+    public function convertToExpense(SavingGoal $goal)
+    {
+        // dd($goal);
+
+        Transaction::create([
+            'profile_id' => $goal->profile_id,
+            'category_id' => $goal->category_id,
+            'amount' => $goal->saved_amount,
+            'type' => 'expense',
+            'description' => $goal->name,
+        ]);
+     
+
+        $goal->status = 'fulfilled';
+        $goal->save();
+
+        return redirect()->back()->with('success', 'Saving goal converted to expense!');
     }
 
     /**
