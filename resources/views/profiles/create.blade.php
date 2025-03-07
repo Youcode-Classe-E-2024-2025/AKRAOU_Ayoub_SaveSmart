@@ -1,8 +1,4 @@
-@extends('layouts.main')
-
-@section('title', 'Ajouter un Profil')
-
-@section('content')
+<x-layout>
 <div class="bg-white p-8 rounded-lg shadow-md w-96 mx-auto mt-10">
     <h1 class="text-2xl font-bold mb-6 text-center">Ajouter un Profil</h1>
     <form action="{{ route('profiles.store') }}" method="POST" >
@@ -26,4 +22,4 @@
         <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition duration-200">Ajouter Profil</button>
     </form>
 </div>
-@endsection
+</x-layout>

@@ -1,10 +1,4 @@
-<!-- resources/views/accounts/register.blade.php -->
-
-@extends('layouts.main')
-
-@section('title', 'Inscription')
-
-@section('content')
+<x-layout>
 <div class="bg-white p-8 rounded-lg shadow-md w-96 mx-auto mt-10">
     <h1 class="text-2xl font-bold mb-6 text-center">Inscription</h1>
     <form action="{{ route('register') }}" method="POST">
@@ -50,4 +44,4 @@
         <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600">S'inscrire</button>
     </form>
 </div>
-@endsection
+</x-layout>
